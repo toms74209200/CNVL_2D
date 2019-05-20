@@ -224,9 +224,17 @@ process (CLK, nRST) begin
             cnvl_busy <= '1';
         elsif (wh_cnt-1 > rh_cnt) then
             if (wp_cnt = rp_cnt-1) then
-                cnvl_busy <= '1';
+                if (rw_cnt = W+1 and rwo_cnt = W-1) then
+                    cnvl_busy <= '0';
+                else
+                    cnvl_busy <= '1';
+                end if;
             elsif (wp_cnt = 3 and rp_cnt = 0) then
-                cnvl_busy <= '1';
+                if (rw_cnt = W+1 and rwo_cnt = W-1) then
+                    cnvl_busy <= '0';
+                else
+                    cnvl_busy <= '1';
+                end if;
             else
                 cnvl_busy <= '0';
             end if;
@@ -285,16 +293,6 @@ process (CLK, nRST) begin
         rw_cnt <= 0;
     elsif (CLK'event and CLK = '1') then
         if (cnvl_busy = '1') then
-            if (rw_cnt = W+1) then
-                if (rwo_cnt = W-1) then
-                    rw_cnt <= 0;
-                else
-                    rw_cnt <= rw_cnt;
-                end if;
-            else
-                rw_cnt <= rw_cnt + 1;
-            end if;
-        elsif (rw_cnt > 0) then
             if (rw_cnt = W+1) then
                 if (rwo_cnt = W-1) then
                     rw_cnt <= 0;
